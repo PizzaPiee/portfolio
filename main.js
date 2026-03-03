@@ -4,28 +4,22 @@ const navLinks = document.querySelector('.nav-links');
 
 if (menuToggle) {
     menuToggle.addEventListener('click', () => {
-        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
-        // For better mobile experience
-        if (navLinks.style.display === 'flex') {
-            navLinks.style.flexDirection = 'column';
-            navLinks.style.position = 'absolute';
-            navLinks.style.top = '100%';
-            navLinks.style.left = '0';
-            navLinks.style.width = '100%';
-            navLinks.style.backgroundColor = 'white';
-            navLinks.style.padding = '20px';
-            navLinks.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
-            
-            // Style each link
-            const links = navLinks.querySelectorAll('a');
-            links.forEach(link => {
-                link.style.display = 'block';
-                link.style.padding = '10px 0';
-                link.style.borderBottom = '1px solid #f0f0f0';
-            });
-        }
+        navLinks.classList.toggle('active');
+        // Update aria-expanded for accessibility
+        const isExpanded = navLinks.classList.contains('active');
+        menuToggle.setAttribute('aria-expanded', isExpanded);
     });
 }
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768) {
+        if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+            navLinks.classList.remove('active');
+            menuToggle.setAttribute('aria-expanded', 'false');
+        }
+    }
+});
 
 // Smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -42,9 +36,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 behavior: 'smooth'
             });
             
-            // Close mobile menu if open
+            // Close mobile menu if open on mobile
             if (window.innerWidth <= 768) {
-                navLinks.style.display = 'none';
+                navLinks.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
             }
         }
     });
